@@ -7,8 +7,15 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 
 public class Controller implements Initializable {
 	
@@ -53,6 +60,7 @@ public class Controller implements Initializable {
 				numberInputting = true;
 				textField.clear();
 			}
+			
 			textField.appendText(bText);
 			return;
 		}
@@ -68,7 +76,12 @@ public class Controller implements Initializable {
 			final BigDecimal right = numberInputting ? new BigDecimal(textField.getText()) : left;
 			
 			left = math(selectedOperator,left, right);
+			if(left.toString().indexOf('.') >= 0) {
+				textField.setText(left.stripTrailingZeros().toString());
+			}else {
 			textField.setText(left.toString());
+			}
+			
 			numberInputting = false;
 			return;
 		}
@@ -85,7 +98,7 @@ public class Controller implements Initializable {
 	}
 	
 	//math of the calculator 
-	public static BigDecimal math(String operator, BigDecimal left, BigDecimal right){
+	public BigDecimal math(String operator, BigDecimal left, BigDecimal right){
 		switch(operator){
 			case "+":
 				return left.add(right);
@@ -94,17 +107,44 @@ public class Controller implements Initializable {
 			case "*":
 				return left.multiply(right);
 			case "/":
-				//rounding to 4 decimal places 
-				return left.divide(right, 4, RoundingMode.HALF_UP);
+				if (right.toString().equals("0")){
+					AlertBox("ERROR", "You Cannot Divide By Zero");
+					return BigDecimal.ZERO;
+				}
+				return left.divide(right, 8, RoundingMode.HALF_UP);
+				
 		}
 		return right;
 	}
 	
-	//
-	
-	
+	//An alert box for when you try to divide by zero 
+	private void AlertBox(String title, String message) {
+		Stage window = new Stage();
+
+        //Block events to other windows
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle(title);
+        window.setMinWidth(250);
+
+        Label label = new Label();
+        label.setText(message);
+        Button closeButton = new Button("OK");
+        closeButton.setOnAction(e -> window.close());
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label, closeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        //Display window and wait for it to be closed before returning
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
+		
+	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
 	}
 	
 	

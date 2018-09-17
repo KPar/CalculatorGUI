@@ -1,0 +1,16 @@
+.Button{
+	-fx-background-color:#212F3D;
+	-fx-text-fill: #EAECEE;
+}
+.SideButton{
+	-fx-background-color:#2C3E50 ;
+	-fx-text-fill: #EAECEE;
+}
+.TextFieldStyle{
+	-fx-background-color:#17202A ;
+	-fx-text-fill: #EAECEE;
+}
+.equalButton{
+	-fx-background-color:#1D8348 ;
+	-fx-text-fill: #EAECEE;
+}
