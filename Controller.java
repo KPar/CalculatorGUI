@@ -60,12 +60,25 @@ public class Controller implements Initializable {
 				numberInputting = true;
 				textField.clear();
 			}
-			
 			textField.appendText(bText);
+			int totalDots=0;
+			for(int i=0; i<textField.getText().toString().length(); i++) {
+			   if(textField.getText().toString().charAt(i) == '.') {
+				   totalDots++;
+			   } 
+			   if(totalDots>1) {
+				   AlertBox("Invaild Integer", "Cannot Use More Than One Decimal Point");
+				   textField.clear();
+				   return;
+			   }
+			}
 			return;
 		}
 		//entering operators 
 		if(bText.matches("\\+") || bText.matches("\\*") || bText.matches("\\/") || bText.matches("\\-")){
+			if(textField.getText().toString().equals("")) {
+				return;
+			}
 			left = new BigDecimal(textField.getText());
 			selectedOperator = bText;
 			numberInputting = false;
@@ -76,15 +89,18 @@ public class Controller implements Initializable {
 			final BigDecimal right = numberInputting ? new BigDecimal(textField.getText()) : left;
 			
 			left = math(selectedOperator,left, right);
-			if(left.toString().indexOf('.') >= 0) {
+			
+			//gets rid of trailing Zeros but avoids integers ending in 0
+			if(left.toString().indexOf('.') != -1) {
+				System.out.println(left.toString());
 				textField.setText(left.stripTrailingZeros().toString());
 			}else {
 			textField.setText(left.toString());
 			}
-			
 			numberInputting = false;
 			return;
 		}
+		
 		//flips signs 
 		if(bText.equals("+/-")){
 			left = new BigDecimal(textField.getText());
@@ -107,7 +123,7 @@ public class Controller implements Initializable {
 			case "*":
 				return left.multiply(right);
 			case "/":
-				if (right.toString().equals("0")){
+				if (right.intValueExact() == 0){
 					AlertBox("ERROR", "You Cannot Divide By Zero");
 					return BigDecimal.ZERO;
 				}
