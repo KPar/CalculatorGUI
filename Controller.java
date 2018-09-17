@@ -7,8 +7,15 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 
 public class Controller implements Initializable {
 	
@@ -85,26 +92,54 @@ public class Controller implements Initializable {
 	}
 	
 	//math of the calculator 
-	public static BigDecimal math(String operator, BigDecimal left, BigDecimal right){
+	public BigDecimal math(String operator, BigDecimal left, BigDecimal right){
 		switch(operator){
 			case "+":
-				return left.add(right);
+				return left.add(right).stripTrailingZeros();
 			case "-":
-				return left.subtract(right);
+				return left.subtract(right).stripTrailingZeros();
 			case "*":
-				return left.multiply(right);
+				return left.multiply(right).stripTrailingZeros();
 			case "/":
-				//rounding to 4 decimal places 
-				return left.divide(right, 4, RoundingMode.HALF_UP);
+				if (right.toString().equals("0")){
+					AlertBox("Error", "You can't divide by zero");
+					return BigDecimal.ZERO;
+				}
+				System.out.println(right.toString());
+				return left.divide(right, 8, RoundingMode.HALF_UP).stripTrailingZeros();
+				
 		}
 		return right;
 	}
 	
-	//
-	
-	
+	//An alert box for when you try to divide by zero 
+	private void AlertBox(String title, String message) {
+		Stage window = new Stage();
+
+        //Block events to other windows
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle(title);
+        window.setMinWidth(250);
+
+        Label label = new Label();
+        label.setText(message);
+        Button closeButton = new Button("Close this window");
+        closeButton.setOnAction(e -> window.close());
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label, closeButton);
+        layout.setAlignment(Pos.CENTER);
+
+        //Display window and wait for it to be closed before returning
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
+		
+	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		
 	}
 	
 	
