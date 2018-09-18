@@ -86,14 +86,17 @@ public class Controller implements Initializable {
 		}
 		//when equal is pressed 
 		if(bText.equals("=")){
+			//special case for "." into "="
+			if(textField.getText().equals(".")){
+				textField.setText("0");
+			}
 			final BigDecimal right = numberInputting ? new BigDecimal(textField.getText()) : left;
 			
 			left = math(selectedOperator,left, right);
 			
 			//gets rid of trailing Zeros but avoids integers ending in 0
 			if(left.toString().indexOf('.') != -1) {
-				System.out.println(left.toString());
-				textField.setText(left.stripTrailingZeros().toString());
+				textField.setText(left.stripTrailingZeros().toPlainString());
 			}else {
 			textField.setText(left.toString());
 			}
